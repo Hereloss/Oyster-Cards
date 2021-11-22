@@ -2,15 +2,11 @@ require 'oystercard'
 
 describe Oystercard do
 
-  context "Oystercard balance" do
+  it "When initialized, has a balance" do
+    expect(subject.balance).not_to be_nil
+  end
 
-    # before do
-    #   @oystercard = Oystercard.new
-    # end
-
-    it "When initialized, has a balance" do
-      expect(subject.balance).not_to be_nil
-    end
+  context "Oystercard top up" do
 
     it "Can be topped up" do
       expect(subject).to respond_to :top_up
@@ -30,6 +26,14 @@ describe Oystercard do
       old_balance = subject.balance
       subject.top_up(5)
       expect(subject.balance).to eq(old_balance + 5)
+    end
+
+    it "The default limit of a card is £90" do
+      expect(subject.limit).to eq 90
+    end
+
+    it "If a top up will make the balance exceed £90, will raise an error" do
+      expect{subject.top_up(90.1)}.to raise_error("This exceeds your limit of £#{subject.limit}")
     end
 
   end
