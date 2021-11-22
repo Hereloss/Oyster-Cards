@@ -1,8 +1,9 @@
 require_relative 'station'
+require_relative 'journey'
 
 class Oystercard
 
-  attr_reader :balance, :limit, :journey_cost, :entry_station, :current_journey, :past_journeys
+  attr_reader :balance, :limit, :journey_cost
   JOURNEY_COST = 1
   DEFAULT_TOP_UP = 5
   LIMIT = 90
@@ -12,9 +13,6 @@ class Oystercard
     @limit = limit
     @default_top_up = default_top_up
     @journey_cost = journey_cost
-    @entry_station = nil
-    @past_journeys = []
-    @current_journey = {}
   end
 
   def top_up(amount = @default_top_up)
@@ -22,15 +20,6 @@ class Oystercard
     @balance += amount
   end
 
-  private
-
-  def deduct(amount = @journey_cost) 
-    below_zero(amount)
-    @balance -= amount
-  end
-
-  public
-  
   def touch_in(station,amount = @journey_cost)
     below_zero(amount)
     station = station.name if station.is_a?(Station) 
@@ -47,11 +36,12 @@ class Oystercard
     @current_journey = {}
   end
 
-  def in_journey?
-    @entry_station == nil ? false : true
-  end
-
   private
+
+  def deduct(amount = @journey_cost) 
+    below_zero(amount)
+    @balance -= amount
+  end
 
   def above_limit(amount)
     raise "This exceeds your limit of £#{@limit}" unless (@balance + amount) < @limit
