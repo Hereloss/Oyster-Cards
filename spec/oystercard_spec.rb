@@ -25,7 +25,7 @@ describe Oystercard do
     it "The top up value is added to the balance" do
       old_balance = subject.balance
       subject.top_up(5)
-      expect(subject.balance).to eq(old_balance + 5)
+      expect{subject.top_up(5)}.to change{subject.balance}.by(5)
     end
 
     it "The default limit of a card is £90" do
@@ -40,23 +40,20 @@ describe Oystercard do
 
   context "Oystercard deduct" do
 
-    it "expects response to deduct" do
-      expect(subject).to respond_to :deduct
-    end
-
     it "Balance will be lower if money deducted" do
       subject.top_up
       old_balance = subject.balance
-      expect(subject.deduct).to be < old_balance
+      expect(subject.send(:deduct)).to be < old_balance
     end
 
     it "Money cannot be deducted if balance goes below 0" do
-      expect{subject.deduct}.to raise_error "Not enough money"
+      expect{subject.send(:deduct)}.to raise_error "Not enough money"
     end
 
     it "Accepts argument for deducting balance" do
       subject.top_up(5)
-      expect{ subject.deduct(5) }.to_not raise_error 
+      subject.touch_in("Waterloo")
+      expect{ subject.touch_out("Victoria",5) }.to_not raise_error 
     end
   end
 
@@ -71,7 +68,8 @@ describe Oystercard do
     end
 
     it "sets in journey to true after touching in" do
-      subject.touch_in
+      subject.top_up
+      subject.touch_in("Waterloo")
       expect(subject.in_journey?).to eq true
     end
 
@@ -80,9 +78,79 @@ describe Oystercard do
     end 
 
     it "sets in journey to true after touching out" do
-      subject.touch_in
-      subject.touch_out
+      subject.top_up
+      subject.touch_in("Waterloo")
+      subject.touch_out("Victoria")
       expect(subject.in_journey?).to eq false
+    end
+
+    it "Cannot touch in if balance goes below 0" do
+      expect{subject.touch_in("Waterloo")}.to raise_error "Not enough money"
+    end
+
+    it "Will deduct amount upon touching out" do
+      subject.top_up
+      subject.touch_in("Waterloo")
+      expect{subject.touch_out("Victoria")}.to change{subject.balance}.by(-subject.journey_cost)
+    end
+  end
+
+  context "station" do
+    let(:station) { double :station}
+
+    it "Remembers the station it touched in at" do
+      subject.top_up
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq station
+    end
+
+    it "Removes the station on touching out" do
+      subject.top_up
+      subject.touch_in(station)
+      subject.touch_out(station)
+      expect(subject.entry_station).to eq nil
+    end
+
+    it "If not in a station, returns nil" do
+      card = Oystercard.new
+      expect(card.entry_station).to eq nil
+    end
+
+  end
+
+  context "Travel History" do
+
+    before do
+      subject.top_up
+    end
+
+    it "Adds start station to current journey" do
+      subject.touch_in("Waterloo")
+      expect(subject.current_journey["Waterloo"]).to eq nil
+    end
+
+    it "Adds exit station to current journey" do
+      subject.touch_in("Waterloo")
+      subject.touch_out("Victoria")
+      expect(subject.past_journeys[0]["Waterloo"]).to eq "Victoria"
+    end
+
+    it "Adds journey upon ending to list of past journeys" do
+      subject.touch_in("Waterloo")
+      subject.touch_out("Victoria")
+      expect(subject.past_journeys).to include({"Waterloo" => "Victoria"})
+    end
+
+    it "Feature test: Has a list of all past journey" do
+      subject.touch_in("Waterloo")
+      subject.touch_out("Victoria")
+      subject.touch_in("Charing Cross")
+      subject.touch_out("Victoria")
+      subject.touch_in("Waterloo")
+      subject.touch_out("Edgeware")
+      expect(subject.past_journeys).to include({"Waterloo" => "Victoria"})
+      expect(subject.past_journeys).to include({"Charing Cross" => "Victoria"})
+      expect(subject.past_journeys).to include({"Waterloo" => "Edgeware"})
     end
   end
 
