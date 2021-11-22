@@ -14,4 +14,6 @@ gem "ruby", "~> 0.1.0"
 
 gem "rubocop", "~> 1.23"
 
-gem "simplecov", "~> 0.21.2"
+gem "simplecov", "~> 0.21.2", require: false
+
+gem "simplecov-console", "~> 0.9.1", require: false
