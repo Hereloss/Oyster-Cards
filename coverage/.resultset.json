@@ -1,7 +1,7 @@
 {
   "RSpec": {
     "coverage": {
-      "/Users/christhomas/Paringprojectsproper/Oyster-Cards/spec/oystercard_spec.rb": {
+      "/Users/alfonsoghislieri/Coding/Oyster-Cards/spec/oystercard_spec.rb": {
         "lines": [
           1,
           null,
@@ -162,8 +162,10 @@
           null
         ]
       },
-      "/Users/christhomas/Paringprojectsproper/Oyster-Cards/lib/oystercard.rb": {
+      "/Users/alfonsoghislieri/Coding/Oyster-Cards/lib/oystercard.rb": {
         "lines": [
+          1,
+          null,
           1,
           null,
           1,
@@ -199,9 +201,11 @@
           13,
           12,
           12,
+          12,
           null,
           null,
           1,
+          9,
           9,
           9,
           9,
@@ -224,8 +228,54 @@
           null,
           null
         ]
+      },
+      "/Users/alfonsoghislieri/Coding/Oyster-Cards/lib/station.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          4,
+          4,
+          null,
+          null,
+          null,
+          1,
+          4,
+          4,
+          null,
+          null,
+          null
+        ]
+      },
+      "/Users/alfonsoghislieri/Coding/Oyster-Cards/spec/station_spec.rb": {
+        "lines": [
+          1,
+          null,
+          1,
+          null,
+          1,
+          5,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          null
+        ]
       }
     },
-    "timestamp": 1637597753
+    "timestamp": 1637599697
   }
 }

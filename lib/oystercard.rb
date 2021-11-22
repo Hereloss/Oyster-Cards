@@ -1,3 +1,5 @@
+require_relative 'station'
+
 class Oystercard
 
   attr_reader :balance, :limit, :journey_cost, :entry_station, :current_journey, :past_journeys
@@ -31,12 +33,14 @@ class Oystercard
   
   def touch_in(station,amount = @journey_cost)
     below_zero(amount)
+    station = station.name if station.is_a?(Station) 
     @entry_station = station
     @current_journey[station] = nil
   end
 
   def touch_out(exit_station, amount = @journey_cost)
     deduct(amount)
+    exit_station = exit_station.name if exit_station.is_a?(Station) 
     @current_journey[@entry_station] = exit_station
     @entry_station = nil
     @past_journeys << @current_journey
