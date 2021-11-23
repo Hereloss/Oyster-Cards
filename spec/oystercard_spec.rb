@@ -51,16 +51,16 @@ describe Oystercard do
     end
 
     it "Accepts argument for deducting balance" do
-      subject.top_up(5)
+      subject.top_up(10)
       subject.touch_in("Waterloo")
-      expect{ subject.touch_out("Victoria",5) }.to_not raise_error 
+      expect{ subject.touch_out("Victoria") }.to_not raise_error 
     end
   end
 
   context "Touch in / Touch out" do
 
     it "check if person in journey" do
-      expect(subject.in_journey?).to eq(false).or eq(true)
+      expect(subject.journey.in_journey?).to eq(false).or eq(true)
     end
     
     it "expects response to touch in" do
@@ -70,18 +70,18 @@ describe Oystercard do
     it "sets in journey to true after touching in" do
       subject.top_up
       subject.touch_in("Waterloo")
-      expect(subject.in_journey?).to eq true
+      expect(subject.journey.in_journey?).to eq true
     end
 
     it "expects response to touch out" do
       expect(subject).to respond_to :touch_out
     end 
 
-    it "sets in journey to true after touching out" do
+    it "sets in journey to false after touching out" do
       subject.top_up
       subject.touch_in("Waterloo")
       subject.touch_out("Victoria")
-      expect(subject.in_journey?).to eq false
+      expect(subject.journey.in_journey?).to eq false
     end
 
     it "Cannot touch in if balance goes below 0" do
@@ -91,67 +91,7 @@ describe Oystercard do
     it "Will deduct amount upon touching out" do
       subject.top_up
       subject.touch_in("Waterloo")
-      expect{subject.touch_out("Victoria")}.to change{subject.balance}.by(-subject.journey_cost)
+      expect{subject.touch_out("Victoria")}.to change{subject.balance}.by(-6)
     end
   end
-
-  context "station" do
-    let(:station) { double :station}
-
-    it "Remembers the station it touched in at" do
-      subject.top_up
-      subject.touch_in(station)
-      expect(subject.entry_station).to eq station
-    end
-
-    it "Removes the station on touching out" do
-      subject.top_up
-      subject.touch_in(station)
-      subject.touch_out(station)
-      expect(subject.entry_station).to eq nil
-    end
-
-    it "If not in a station, returns nil" do
-      card = Oystercard.new
-      expect(card.entry_station).to eq nil
-    end
-
-  end
-
-  context "Travel History" do
-
-    before do
-      subject.top_up
-    end
-
-    it "Adds start station to current journey" do
-      subject.touch_in("Waterloo")
-      expect(subject.current_journey["Waterloo"]).to eq nil
-    end
-
-    it "Adds exit station to current journey" do
-      subject.touch_in("Waterloo")
-      subject.touch_out("Victoria")
-      expect(subject.past_journeys[0]["Waterloo"]).to eq "Victoria"
-    end
-
-    it "Adds journey upon ending to list of past journeys" do
-      subject.touch_in("Waterloo")
-      subject.touch_out("Victoria")
-      expect(subject.past_journeys).to include({"Waterloo" => "Victoria"})
-    end
-
-    it "Feature test: Has a list of all past journey" do
-      subject.touch_in("Waterloo")
-      subject.touch_out("Victoria")
-      subject.touch_in("Charing Cross")
-      subject.touch_out("Victoria")
-      subject.touch_in("Waterloo")
-      subject.touch_out("Edgeware")
-      expect(subject.past_journeys).to include({"Waterloo" => "Victoria"})
-      expect(subject.past_journeys).to include({"Charing Cross" => "Victoria"})
-      expect(subject.past_journeys).to include({"Waterloo" => "Edgeware"})
-    end
-  end
-
 end
