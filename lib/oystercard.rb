@@ -3,6 +3,7 @@
 require_relative 'station'
 require_relative 'journey'
 
+# Creates functionality for an oystercard, touching in and out
 class Oystercard
   attr_reader :balance, :limit, :journey_cost, :journey, :max_journey_cost
 
@@ -36,7 +37,7 @@ class Oystercard
   def touch_out(exit_station)
     amount = @journey.fare(exit_station, 'Out')
     deduct(amount)
-    exit_station_name = exit_station.name if exit_station.is_a?(Station)
+    exit_station = exit_station.name if exit_station.is_a?(Station)
     @journey.journey_log.journey_end(exit_station)
   end
 

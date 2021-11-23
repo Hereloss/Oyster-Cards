@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
+# Journey
 class Journey
   attr_reader :journey_log
 
   def initialize
-    @journey_log = Journey_log.new
+    @journey_log = JourneyLog.new
   end
 
   def fare(exit_station, inout)
-    penalty = penalty_fare(exit_station, inout)
-    case penalty
+    case penalty_fare(exit_station, inout)
     when true
       6
     when false
@@ -24,19 +24,9 @@ class Journey
   def penalty_fare(exit_station, inout)
     case inout
     when 'Out'
-      if @journey_log.entry_station.nil?
-        @journey_log.store_journey(exit_station)
-        true
-      else
-        false
-      end
+      out(exit_station)
     when 'In'
-      if @journey_log.travelling == true
-        @journey_log.store_journey(exit_station)
-        true
-      else
-        false
-      end
+      inside(exit_station)
     end
   end
 
@@ -47,5 +37,23 @@ class Journey
     return (from - to).abs unless from == to
 
     1
+  end
+
+  def out(exit_station)
+    if @journey_log.entry_station.nil?
+      @journey_log.store_journey(exit_station)
+      true
+    else
+      false
+    end
+  end
+
+  def inside(exit_station)
+    if @journey_log.travelling == true
+      @journey_log.store_journey(exit_station)
+      true
+    else
+      false
+    end
   end
 end

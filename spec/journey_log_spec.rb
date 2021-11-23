@@ -2,7 +2,7 @@
 
 require 'journey_log'
 
-describe Journey_log do
+describe JourneyLog do
   context 'station' do
     let(:station) { double :station }
 
@@ -20,6 +20,12 @@ describe Journey_log do
     it 'If not in a station, returns nil' do
       expect(subject.entry_station).to eq nil
     end
+  end
+
+  it "stores journey" do
+    subject.journey_start("Victoria")
+    subject.store_journey("Waterloo")
+    expect(subject.past_journeys.count).to_not eq 0
   end
 
   context 'Travel History' do

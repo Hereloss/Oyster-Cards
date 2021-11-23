@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Station
 class Station
   attr_reader :name, :zone
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-class Journey_log
+# This is a journey log class that tracks travel
+class JourneyLog
   attr_reader :entry_station, :current_journey, :past_journeys, :travelling, :station_object
 
   def initialize

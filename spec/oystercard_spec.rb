@@ -23,7 +23,6 @@ describe Oystercard do
     end
 
     it 'The top up value is added to the balance' do
-      old_balance = subject.balance
       subject.top_up(5)
       expect { subject.top_up(5) }.to change { subject.balance }.by(5)
     end
@@ -69,7 +68,9 @@ describe Oystercard do
       subject.touch_in('Waterloo')
       expect(subject.journey.journey_log.in_journey?).to eq true
     end
+  end
 
+  context 'Break' do
     it 'expects response to touch out' do
       expect(subject).to respond_to :touch_out
     end
