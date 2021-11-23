@@ -22,9 +22,9 @@ describe JourneyLog do
     end
   end
 
-  it "stores journey" do
-    subject.journey_start("Victoria")
-    subject.store_journey("Waterloo")
+  it 'stores journey' do
+    subject.journey_start('Victoria')
+    subject.store_journey('Waterloo')
     expect(subject.past_journeys.count).to_not eq 0
   end
 
@@ -57,5 +57,9 @@ describe JourneyLog do
       expect(subject.past_journeys).to include({ 'Charing Cross' => 'Victoria' })
       expect(subject.past_journeys).to include({ 'Waterloo' => 'Edgeware' })
     end
+  end
+
+  it 'Can show past journeys' do
+    expect(subject.journeys).to be_instance_of(Array)
   end
 end

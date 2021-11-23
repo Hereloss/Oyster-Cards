@@ -92,4 +92,10 @@ describe Oystercard do
       expect { subject.touch_out('Victoria') }.to change { subject.balance }.by(-6)
     end
   end
+
+  it 'Can deduct money' do
+    subject.top_up
+    expect { subject.send(:deduct) }.not_to raise_error
+  end
+
 end

@@ -32,11 +32,32 @@ describe Journey do
     expect(subject.fare('Victoria', 'In')).to eq 0
   end
 
-  it "check penalty fare" do
-    expect(subject.penalty_fare("Waterloo", "In")).to eq(true).or eq(false)
+  it 'check penalty fare' do
+    expect(subject.penalty_fare('Waterloo', 'In')).to eq(true).or eq(false)
   end
 
-  it "check penalty fare" do
-    expect(subject.penalty_fare("Waterloo", "Out")).to eq(true).or eq(false)
+  it 'check penalty fare' do
+    expect(subject.penalty_fare('Waterloo', 'Out')).to eq(true).or eq(false)
   end
+
+  it 'Gives penalty if out' do
+    expect(subject.inside('Waterloo')).to eq(true).or eq(false)
+  end
+
+  it 'Gives penalty if in' do
+    expect(subject.out('Waterloo')).to eq(true).or eq(false)
+  end
+
+  it 'Gives one if same station to same station' do
+    station1 = Station.new('Victoria', 4)
+    station2 = Station.new('Aldgate East', 4)
+    expect_any_instance_of(JourneyLog).to receive(:station_object).and_return(station1)
+    expect(subject.calculate_fare(station2)).to eq 1
+  end
+
+  it 'Will return false if has entry and exit stations' do
+    expect_any_instance_of(JourneyLog).to receive(:entry_station).and_return('Waterloo')
+    expect(subject.out('Victoria')).to eq false
+  end
+
 end
