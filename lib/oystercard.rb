@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require_relative 'station'
 require_relative 'journey'
 
 class Oystercard
-
   attr_reader :balance, :limit, :journey_cost, :journey, :max_journey_cost
+
   JOURNEY_COST = 7.40
   DEFAULT_TOP_UP = 10
   LIMIT = 90
 
-  def initialize(max_journey_cost = JOURNEY_COST,default_top_up = DEFAULT_TOP_UP, limit = LIMIT)
+  def initialize(max_journey_cost = JOURNEY_COST, default_top_up = DEFAULT_TOP_UP, limit = LIMIT)
     @journey = Journey.new
     @balance = 0
     @limit = limit
@@ -23,19 +25,19 @@ class Oystercard
 
   def touch_in(station)
     below_zero(@max_journey_cost)
-    station_name = station.name if station.is_a?(Station) 
-    if journey.travelling == true
-      amount = @journey.fare("None","In")
+    station_name = station.name if station.is_a?(Station)
+    if @journey.journey_log.travelling == true
+      amount = @journey.fare('None', 'In')
       deduct(amount)
     end
-    @journey.journey_start(station_name,station)
+    @journey.journey_log.journey_start(station_name, station)
   end
 
   def touch_out(exit_station)
-    amount = @journey.fare(exit_station, "Out")
+    amount = @journey.fare(exit_station, 'Out')
     deduct(amount)
-    exit_station_name = exit_station.name if exit_station.is_a?(Station) 
-    @journey.journey_end(exit_station)
+    exit_station_name = exit_station.name if exit_station.is_a?(Station)
+    @journey.journey_log.journey_end(exit_station)
   end
 
   private
@@ -50,6 +52,6 @@ class Oystercard
   end
 
   def below_zero(amount)
-    raise "Not enough money" unless (@balance - amount) >= 0
+    raise 'Not enough money' unless (@balance - amount) >= 0
   end
 end

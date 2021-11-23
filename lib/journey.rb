@@ -1,74 +1,51 @@
-class Journey
+# frozen_string_literal: true
 
-  attr_reader :entry_station, :current_journey, :past_journeys, :travelling
+class Journey
+  attr_reader :journey_log
 
   def initialize
-    @entry_station = nil
-    @past_journeys = []
-    @current_journey = {}
-    @travelling = false
-  end
-
-  def in_journey?
-    return @travelling
-  end
-
-  def journey_start(station, station_object = Station.new("W",1))
-    @station_object = station_object
-    @travelling = true
-    @entry_station = station
-    @current_journey[station] = nil
-  end
-
-  def journey_end(exit_station)
-    @travelling = false
-    exit_station = exit_station.name if exit_station.is_a?(Station) 
-    store_journey(exit_station)
+    @journey_log = Journey_log.new
   end
 
   def fare(exit_station, inout)
-    penalty = penalty_fare(exit_station,inout)
-    if penalty == true
-      return 6
-    elsif penalty == false
-      if inout == "In"
-        return 0
-      else 
-        return calculate_fare(exit_station)
+    penalty = penalty_fare(exit_station, inout)
+    case penalty
+    when true
+      6
+    when false
+      if inout == 'In'
+        0
+      else
+        calculate_fare(exit_station)
       end
     end
   end
 
-  def penalty_fare(exit_station,inout)
-    if inout == "Out"
-      if @entry_station == nil
-        store_journey(exit_station)
-        return true
+  def penalty_fare(exit_station, inout)
+    case inout
+    when 'Out'
+      if @journey_log.entry_station.nil?
+        @journey_log.store_journey(exit_station)
+        true
       else
-        return false
+        false
       end
-    elsif inout == "In"
-      if @travelling == true
-        store_journey(exit_station)
-        return true
+    when 'In'
+      if @journey_log.travelling == true
+        @journey_log.store_journey(exit_station)
+        true
       else
-        return false
+        false
       end
     end
-  end
-
-  def store_journey(exit_station)
-    exit_station = exit_station.name if exit_station.is_a?(Station) 
-    @current_journey[@entry_station] = exit_station
-    @entry_station = nil
-    @past_journeys << @current_journey
-    @current_journey = {}
   end
 
   def calculate_fare(exit_station)
-    from = @station_object.zone
+    from = @journey_log.station_object.zone
     to = exit_station.zone
-    return 5 if ( from == 1 || to == 1)
-    return abs(from - to)
+    return 5 if from == 1 || to == 1
+    return (from - to).abs unless from == to
+
+    1
   end
 end

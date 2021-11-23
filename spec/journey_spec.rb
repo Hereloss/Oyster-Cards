@@ -1,58 +1,34 @@
-require 'journey.rb'
+# frozen_string_literal: true
+
+require 'journey'
 
 describe Journey do
-
-  context "station" do
-    let(:station) { double :station}
-
-    it "Remembers the station it touched in at" do
-      subject.journey_start(station)
-      expect(subject.entry_station).to eq station
-    end
-
-    it "Removes the station on touching out" do
-      subject.journey_start(station)
-      subject.journey_end(station)
-      expect(subject.entry_station).to eq nil
-    end
-
-    it "If not in a station, returns nil" do
-      expect(subject.entry_station).to eq nil
-    end
-
+  it 'Gives penalty fare if touch in twice' do
+    expect_any_instance_of(Journey_log).to receive(:travelling).and_return(true)
+    expect(subject.fare('Victoria', 'In')).to eq 6
   end
 
-  context "Travel History" do
-
-    it "Adds start station to current journey" do
-      subject.journey_start("Waterloo")
-      expect(subject.current_journey["Waterloo"]).to eq nil
-    end
-
-    it "Adds exit station to current journey" do
-      subject.journey_start("Waterloo")
-      subject.journey_end("Victoria")
-      expect(subject.past_journeys[0]["Waterloo"]).to eq "Victoria"
-    end
-
-    it "Adds journey upon ending to list of past journeys" do
-      subject.journey_start("Waterloo")
-      subject.journey_end("Victoria")
-      expect(subject.past_journeys).to include({"Waterloo" => "Victoria"})
-    end
-
-    it "Feature test: Has a list of all past journey" do
-      subject.journey_start("Waterloo")
-      subject.journey_end("Victoria")
-      subject.journey_start("Charing Cross")
-      subject.journey_end("Victoria")
-      subject.journey_start("Waterloo")
-      subject.journey_end("Edgeware")
-      expect(subject.past_journeys).to include({"Waterloo" => "Victoria"})
-      expect(subject.past_journeys).to include({"Charing Cross" => "Victoria"})
-      expect(subject.past_journeys).to include({"Waterloo" => "Edgeware"})
-    end
+  it 'Gives a penalty fare if touch out twice' do
+    expect_any_instance_of(Journey_log).to receive(:entry_station).and_return(nil)
+    expect(subject.fare('Victoria', 'Out')).to eq 6
   end
 
+  it 'Gives fare of £5 for zone 1 to zone 1' do
+    station1 = Station.new('Victoria', 1)
+    station2 = Station.new('Aldgate East', 1)
+    expect_any_instance_of(Journey_log).to receive(:station_object).and_return(station1)
+    expect(subject.calculate_fare(station2)).to eq 5
+  end
 
+  it 'gives different if travelling from two different zones' do
+    station1 = Station.new('Victoria', 4)
+    station2 = Station.new('Aldgate East', 6)
+    expect_any_instance_of(Journey_log).to receive(:station_object).and_return(station1)
+    expect(subject.calculate_fare(station2)).to eq 2
+  end
+
+  it 'If touch in and not having a penalty charges nothing' do
+    expect_any_instance_of(Journey_log).to receive(:travelling).and_return(false)
+    expect(subject.fare('Victoria', 'In')).to eq 0
+  end
 end
